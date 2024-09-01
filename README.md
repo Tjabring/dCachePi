@@ -21,9 +21,8 @@ Usage:
 To run with parameters:
 
 ./picache --datadir=<directory> --passwd=<password>
-
-
-If no parameters are provided, the script will prompt for them.
+If no parameters are provided, the script will prompt for them:
+./picache
 
 License:
 This script is provided as-is, without warranty. Use at your own risk.
