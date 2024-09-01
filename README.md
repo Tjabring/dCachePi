@@ -29,4 +29,7 @@ This script is provided as-is, without warranty. Use at your own risk.
 
 Based on: https://github.com/sara-nl/dcache_aio
 
+Tested on a Raspberry Pi 4 Model B Rev 1.5. Four cores and 2GB memory.
+Running on Raspberry Pi OS Debian GNU/Linux 12 (bookworm) 6.6.31+rpt-rpi-v8
+
 For more information about dCache, visit: [dCache.org](https://www.dcache.org).
