@@ -26,5 +26,6 @@ If no parameters are provided, the script will prompt for them:
 
 License:
 This script is provided as-is, without warranty. Use at your own risk.
+based on: https://github.com/sara-nl/dcache_aio
 
 For more information about dCache, visit: [dCache.org](https://www.dcache.org).
