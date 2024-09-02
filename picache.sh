@@ -99,8 +99,8 @@ fi
 apt --fix-broken install
 apt update && apt install wget
 
-# Fetch and store the GPG key
-wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
+# Fetch and store the GPG key if it not exists
+if [ ! -f /usr/share/keyrings/pgdg.gpg ]; then echo "Will get Postgresql ACCC4CF8.asc key"; wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg; fi
 
 # Create the repository configuration file
 sh -c 'echo "deb [arch=arm64 signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -265,26 +265,28 @@ systemctl start dcache.target
 # Move to a new line before checking the service
 echo -ne "\rChecking if dCache service is started "
 
-sleep 1
+sleep 5
 
-# Loop until the dCache service is active
-while ! systemctl is-active --quiet dcache.target; do
-
-total_time=120
-message="Checking if dCache webdav service is started. This can take up to two minutes."
-for ((j=1; j<=total_time; j++)); do
-    num_stars=$((j * 60 / total_time))
-    printf "\r%s [%-60s]" "$message" "$(printf '%*s' "$num_stars" | tr ' ' '*')"
-    sleep 1
-done
-echo
-
-sleep 1
-
-echo -ne "\rDone!                                     \n"
+# Check if dCache service is active
+echo "Check if dCache service is active."
+if systemctl is-active --quiet dcache.target; then
+    total_time=120
+    message="dCache service is running. Waiting for additional 120 seconds to finish startup sequence...."
+    for ((j=1; j<=total_time; j++)); do
+        num_stars=$((j * 60 / total_time))
+        printf "\r%s [%-60s]" "$message" "$(printf '%*s' "$num_stars" | tr ' ' '*')"
+        sleep 1
+    done
+    echo
+    echo -ne "\rDone!                                     \n"
+else
+    echo -e "\rError: dCache service did not start within 5 seconds. Please check the service."
+    exit 1
+fi
 
 echo " "
-echo "You can test uploading the README.md file with webdav now. Use localhost, hostname or IP address"
+echo "You can test uploading the README.md file with webdav now. Use localhost, hostname, or IP address"
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
 echo " "
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
+
