@@ -103,16 +103,16 @@ apt update && apt install wget
 wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
 
 # Create the repository configuration file
-sudo sh -c 'echo "deb [arch=arm64 signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sh -c 'echo "deb [arch=arm64 signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
 # Ensure necessary packages are installed
-sudo apt install -y curl ca-certificates
+apt install -y curl ca-certificates
 
 # Update the package lists
-sudo apt update
+apt update
 
 # Install the latest version of PostgreSQL (e.g., version 16)
-sudo apt install -y postgresql-16
+apt install -y postgresql-16
 
 # Install necessary packages based on distribution
 case $DISTRO in
@@ -168,9 +168,6 @@ $pkg_tool $dcache_basename
 
 cat /etc/postgresql/16/main/pg_hba.conf | grep -E 'all\s+all' | sed -i 's/scram-sha-256/trust/' /etc/postgresql/16/main/pg_hba.conf
 
-
-#sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
-
 systemctl enable postgresql@16-main.service
 systemctl start postgresql@16-main.service
 
@@ -182,7 +179,7 @@ sudo -u postgres psql -c "CREATE DATABASE chimera OWNER dcache;"
 systemctl restart postgresql@16-main.service
 
 if [ ! -f /etc/dcache/dcache.conf ]; then
-    sudo touch /etc/dcache/dcache.conf
+    touch /etc/dcache/dcache.conf
 fi
 
 # Configure dCache
@@ -265,15 +262,6 @@ systemctl daemon-reload
 systemctl stop dcache.target
 systemctl start dcache.target
 
-# Give dCache some time to startup
-echo -n "Waiting for dCache to initialize "
-
-# Show the growing line of asterisks for 5 seconds
-for ((j=1; j<=10; j++)); do
-    echo -ne "\rWaiting for dCache to initialize $(printf '%*s' "$j" | tr ' ' '*')"
-    sleep 0.5  # Sleep 0.5 seconds per step, so 10 steps = 5 seconds total
-done
-
 # Move to a new line before checking the service
 echo -ne "\rChecking if dCache service is started "
 
@@ -281,22 +269,22 @@ sleep 1
 
 # Loop until the dCache service is active
 while ! systemctl is-active --quiet dcache.target; do
-    for ((j=1; j<=120; j++)); do
-        echo -ne "\rChecking if dCache service is started. This can take up to a minute. $(printf '%*s' "$j" | tr ' ' '*')"
-        sleep 0.5
-    done
+
+total_time=120
+message="Checking if dCache webdav service is started. This can take up to two minutes."
+for ((j=1; j<=total_time; j++)); do
+    num_stars=$((j * 60 / total_time))
+    printf "\r%s [%-60s]" "$message" "$(printf '%*s' "$num_stars" | tr ' ' '*')"
+    sleep 1
 done
+echo
 
 sleep 1
 
 echo -ne "\rDone!                                     \n"
 
 echo " "
-echo "You can test uploading the README.md file with webdav now:"
+echo "You can test uploading the README.md file with webdav now. Use localhost, hostname or IP address"
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
-echo "or"
-echo "curl -v -u tester:$PASSWD -L -T README.md http://$(hostname).local:2880/home/tester/README.md"
-echo "or"
-echo "curl -v -u tester:$PASSWD -L -T README.md http://$(hostname):2880/home/tester/README.md"
 echo " "
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
