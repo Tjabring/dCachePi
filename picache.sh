@@ -174,8 +174,26 @@ systemctl enable postgresql@16-main.service
 systemctl start postgresql@16-main.service
 
 # Configure PostgreSQL
-sudo -u postgres psql -c "CREATE USER dcache WITH PASSWORD '$PASSWD';"
-sudo -u postgres psql -c "CREATE DATABASE chimera OWNER dcache;"
+#sudo -u postgres psql -c "CREATE USER dcache WITH PASSWORD '$PASSWD';"
+#sudo -u postgres psql -c "CREATE DATABASE chimera OWNER dcache;"
+
+
+# Check if the user exists
+if sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='dcache'" | grep -q 1; then
+    echo "User 'dcache' already exists."
+else
+    sudo -u postgres psql -c "CREATE USER dcache WITH PASSWORD '$PASSWD';"
+    echo "User 'dcache' created successfully."
+fi
+
+# Check if the database exists
+if sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='chimera'" | grep -q 1; then
+    echo "Database 'chimera' already exists."
+else
+    sudo -u postgres psql -c "CREATE DATABASE chimera OWNER dcache;"
+    echo "Database 'chimera' created successfully."
+fi
+
 
 
 systemctl restart postgresql@16-main.service
