@@ -31,6 +31,7 @@ Running on Raspberry Pi OS Lite 64-bit
 Debian GNU/Linux 12 (bookworm) 6.6.31+rpt-rpi-v8
 https://downloads.raspberrypi.com/raspios_lite_arm64/release_notes.txt
 
+
 License:
 This script is provided as-is, without warranty. Use at your own risk.
 
