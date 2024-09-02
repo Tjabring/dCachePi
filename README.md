@@ -24,7 +24,6 @@ To run with parameters:
 If no parameters are provided, the script will prompt for them:
 ./picache
 
-
 Based on: https://github.com/sara-nl/dcache_aio
 
 Tested on a Raspberry Pi 4 Model B Rev 1.5. Four cores and 2GB memory.
