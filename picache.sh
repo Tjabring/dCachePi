@@ -62,26 +62,28 @@ done
 if [ -z "$DATADIR" ] || [ -z "$PASSWD" ]; then
     show_help
     echo
-    read -p "No or incomplete arguments provided. Do you want to continue and provide the values interactively? (y/n) " answer
+    read -p "No or incomplete arguments provided. Do you want to continue and provide the values interactively? (Y/n) " answer
     case $answer in
-        [Yy]* )
-            echo "Continuing with interactive input..."
-            ;;
-        * )
+        [Nn]* )
             echo "Exiting."
             exit 0
+            ;;
+        * )
+            echo "Continuing with interactive input..."
             ;;
     esac
 fi
 
-# Prompt for DATADIR if not provided
+# Prompt for DATADIR if not provided, with default /opt/dcache
 while [ -z "$DATADIR" ]; do
-    read -p "Please enter the DATADIR: " DATADIR
+    read -p "Please enter the DATADIR [/opt/dcache]: " DATADIR
+    DATADIR=${DATADIR:-/opt/dcache}
 done
 
-# Prompt for PASSWD if not provided
+# Prompt for PASSWD if not provided, with default dcache123
 while [ -z "$PASSWD" ]; do
-    read -sp "Please enter the PASSWD: " PASSWD
+    read -sp "Please enter the PASSWD [dcache123]: " PASSWD
+    PASSWD=${PASSWD:-dcache123}
     echo
 done
 
@@ -117,7 +119,7 @@ apt install -y postgresql-16
 # Install necessary packages based on distribution
 case $DISTRO in
     raspbian|debian)
-        apt update && apt install -y locales lynx apache2-utils openjdk-17-jdk rsyslog
+        apt update && apt install -y locales lynx apache2-utils openjdk-17-jdk rsyslog xmlstarlet
         ;;
     *)
         echo "Unsupported distribution: $DISTRO"
@@ -263,12 +265,10 @@ systemctl stop dcache.target
 systemctl start dcache.target
 
 # Move to a new line before checking the service
-echo -ne "\rChecking if dCache service is started "
+echo -ne "\rChecking if dCache service is started."
 
 sleep 5
 
-# Check if dCache service is active
-echo "Check if dCache service is active."
 if systemctl is-active --quiet dcache.target; then
     total_time=120
     message="dCache service is running. Waiting for additional 120 seconds to finish startup sequence...."
@@ -288,5 +288,9 @@ echo " "
 echo "You can test uploading the README.md file with webdav now. Use localhost, hostname, or IP address"
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
 echo " "
+echo "You can check the upload with a curl PROPFIND command."
+echo "curl -s -u tester:$PASSWD -X PROPFIND http://localhost:2880/home/tester/ | xmlstarlet sel -t -m \"//d:response\" -v \"concat(d:href, ' ', d:displayname, ' ', d:getlastmodified)\" -n"
+echo " "
+echo "You can also access the admin console with ssh."
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
 
