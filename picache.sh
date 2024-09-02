@@ -273,8 +273,28 @@ dcache pool create ${DATADIR}/pool-1 pool1 dCacheDomain
 dcache database update
 
 # Create directories
-chimera mkdir /home
-chimera mkdir /home/tester
+#chimera mkdir /home
+#chimera mkdir /home/tester
+
+
+# Create /home directory
+if chimera ls /home >/dev/null 2>&1; then
+    echo -e "\033[32mDirectory '/home' already exists.\033[0m"
+else
+    chimera mkdir /home
+    echo "Directory '/home' created."
+fi
+
+# Create /home/tester directory
+if chimera ls /home/tester >/dev/null 2>&1; then
+    echo -e "\033[32mDirectory '/home/tester' already exists.\033[0m"
+else
+    chimera mkdir /home/tester
+    echo "Directory '/home/tester' created."
+fi
+
+
+
 chimera chown 1000:1000 /home/tester
 
 # Start dCache
@@ -302,6 +322,7 @@ else
     exit 1
 fi
 
+echo -e '\033[32m      dCache is ready for use!\033[0m'
 echo " "
 echo "You can test uploading the README.md file with webdav now. Use localhost, hostname, or IP address"
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
