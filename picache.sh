@@ -198,7 +198,14 @@ fi
 
 systemctl restart postgresql@16-main.service
 
+
+if [ ! -d  /etc/grid-security/vomsdir ]; then
+    echo "created /etc/grid-security/vomsdir"
+    mkdir /etc/grid-security/vomsdir
+fi
+
 if [ ! -f /etc/dcache/dcache.conf ]; then
+    echo "created dcache.conf"
     touch /etc/dcache/dcache.conf
 fi
 
@@ -227,6 +234,14 @@ dcache.enable.space-reservation = false
 [dCacheDomain/gplazma]
 [dCacheDomain/webdav]
  webdav.authn.basic = true
+
+[dCacheDomain/xrootd]
+xrootd.cell.name=Xrootd-anonymous-operations-FULL
+xrootd.net.port=1096
+xrootd.security.tls.mode=OFF
+xrootd.authz.anonymous-operations = FULL
+xrootd.authz.read-paths = /
+xrootd.authz.write-paths = /
 EOF
 
 cat <<'EOF' >/etc/dcache/gplazma.conf
@@ -326,6 +341,10 @@ echo -e '\033[32m      dCache is ready for use!\033[0m'
 echo " "
 echo "You can test uploading the README.md file with webdav now. Use localhost, hostname, or IP address"
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
+echo " "
+echo "You can test xrootd / xrdcp"
+echo "xrdcp -f /bin/bash root://localhost:1096/home/tester/testfile # upload"
+echo "xrdcp -f root://localhost:1096/home/tester/testfile /tmp/testfile # download"
 echo " "
 echo "You can check the upload with a curl PROPFIND command."
 echo "curl -s -u tester:$PASSWD -X PROPFIND http://localhost:2880/home/tester/ | xmlstarlet sel -t -m \"//d:response\" -v \"concat(d:href, ' ', d:displayname, ' ', d:getlastmodified)\" -n"
