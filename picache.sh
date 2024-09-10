@@ -99,7 +99,10 @@ fi
 
 # fix if rerun 
 apt --fix-broken install
-apt update && apt install wget
+apt update && apt install -y wget
+apt install -y ruby-full
+gem install ansi
+apt install -y xrootd-client
 
 # Fetch and store the GPG key if it not exists
 if [ ! -f /usr/share/keyrings/pgdg.gpg ]; then echo "Will get Postgresql ACCC4CF8.asc key"; wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg; fi
