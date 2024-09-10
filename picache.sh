@@ -100,6 +100,7 @@ fi
 # fix if rerun 
 apt --fix-broken install
 apt update && apt install -y wget
+# install for testing and xrdcp
 apt install -y ruby-full
 gem install ansi
 apt install -y xrootd-client
