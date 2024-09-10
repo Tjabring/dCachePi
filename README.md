@@ -4,10 +4,9 @@ piCache - dCache All-In-One Setup Script for Raspberry Pi
 `piCache` is a bash script that automates the setup of a dCache all-in-one server on a Raspberry Pi. It installs dependencies, configures PostgreSQL, sets up dCache, and handles initial configurations. This script is intended for testing purposes only and should not be used on production systems.
 
 Features:
-- Auto-detects Linux distribution.
 - Installs PostgreSQL and dCache.
 - Configures PostgreSQL for dCache.
-- Sets up firewall rules.
+- Sets up firewall rules if used.
 - Generates a self-signed certificate.
 - Supports interactive mode for input if parameters aren't provided.
 
