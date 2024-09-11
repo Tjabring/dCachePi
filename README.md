@@ -31,6 +31,6 @@ Tested on a Raspberry Pi 4 Model B Rev 1.5. Four cores and 2GB memory.
 Running on Raspberry Pi OS Debian GNU/Linux 12 (bookworm) 6.6.31+rpt-rpi-v8
 
 License:
-This script is provided as-is, without warranty. Use at your own risk.
-
-For more information about dCache, visit: [dCache.org](https://www.dcache.org).
+This script is provided as-is, without warranty. 
+Use at your own risk. It is a wrapper around a dCache install and not provided by dCache itself.
+For more information about dCache itself, visit: [dCache.org](https://www.dcache.org).
