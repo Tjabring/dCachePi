@@ -138,13 +138,20 @@ source /etc/default/locale
 
 # Check if UFW or firewalld is running and apply rules accordingly
 if systemctl is-active --quiet ufw; then
+    ufw allow 1094/tcp
+    ufw allow 1096/tcp
     ufw allow 2181/tcp
+    ufw allow 2288/tcp
     ufw allow 22224/tcp
     ufw allow 2880/tcp
     ufw allow 20000:25000/tcp
     ufw allow 33115:33145/tcp
     ufw reload
 elif systemctl is-active --quiet firewalld; then
+
+    firewall-cmd --permanent --zone=public --add-port=1094/tcp
+    firewall-cmd --permanent --zone=public --add-port=1096/tcp
+    firewall-cmd --permanent --zone=public --add-port=2288/tcp
     firewall-cmd --permanent --zone=public --add-port=2181/tcp
     firewall-cmd --permanent --zone=public --add-port=22224/tcp
     firewall-cmd --permanent --zone=public --add-port=2880/tcp
