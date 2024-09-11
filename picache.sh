@@ -233,14 +233,54 @@ dcache.enable.space-reservation = false
 [dCacheDomain/pnfsmanager]
  pnfsmanager.default-retention-policy = REPLICA
  pnfsmanager.default-access-latency = ONLINE
+ pnfsmanager.limits.list-chunk-size=5
+ pnfsmanager.enable.acl=true
 
 [dCacheDomain/cleaner-disk]
 [dCacheDomain/poolmanager]
 [dCacheDomain/billing]
+[dCacheDomain/alarms]
 [dCacheDomain/httpd]
 [dCacheDomain/gplazma]
 [dCacheDomain/webdav]
  webdav.authn.basic = true
+
+[dCacheDomain/statistics]
+[dCacheDomain/srmmanager]
+srmmanager.net.host=localhost
+srmmanager.expired-job-period = 30
+srmmanager.expired-job-period.unit = SECONDS
+
+[dCacheDomain/srm]
+srm.loginbroker.address = localhost
+
+[dCacheDomain/pinmanager]
+
+[dCacheDomain/dcap]
+dcap.authn.protocol=plain
+dcap.authz.anonymous-operations = FULL
+
+[dCacheDomain/dcap]
+dcap.authn.protocol=auth
+
+[dCacheDomain/dcap]
+dcap.authn.protocol=gsi
+
+[dCacheDomain/ftp]
+ftp.authn.protocol=plain
+ftp.net.internal=0.0.0.0
+ftp.authz.readonly.plain = true
+ftp.enable.anonymous-ftp = true
+ftp.anonymous-ftp.root = /
+
+[dCacheDomain/ftp]
+ftp.authn.protocol=tls
+ftp.net.internal=0.0.0.0
+ftp.enable.anonymous-ftp = true
+
+[dCacheDomain/ftp]
+ftp.authn.protocol=gsi
+ftp.net.internal=0.0.0.0
 
 [dCacheDomain/xrootd]
 xrootd.cell.name=Xrootd-anonymous-operations-FULL
@@ -249,6 +289,11 @@ xrootd.security.tls.mode=OFF
 xrootd.authz.anonymous-operations = FULL
 xrootd.authz.read-paths = /
 xrootd.authz.write-paths = /
+
+[dCacheDomain/pool]
+pool.name=pool1
+pool.path=/opt/dcache/pool-1
+pool.wait-for-files=${pool.path}/data
 EOF
 
 cat <<'EOF' >/etc/dcache/gplazma.conf
@@ -295,11 +340,6 @@ dcache pool create ${DATADIR}/pool-1 pool1 dCacheDomain
 # Update dCache databases
 dcache database update
 
-# Create directories
-#chimera mkdir /home
-#chimera mkdir /home/tester
-
-
 # Create /home directory
 if chimera ls /home >/dev/null 2>&1; then
     echo -e "\033[32mDirectory '/home' already exists.\033[0m"
@@ -315,9 +355,6 @@ else
     chimera mkdir /home/tester
     echo "Directory '/home/tester' created."
 fi
-
-
-
 chimera chown 1000:1000 /home/tester
 
 # Start dCache
