@@ -33,4 +33,4 @@ Running on Raspberry Pi OS Debian GNU/Linux 12 (bookworm) 6.6.31+rpt-rpi-v8
 License:
 This script is provided as-is, without warranty. 
 Use at your own risk. It is a wrapper around a dCache install and not provided by dCache itself.
-For more information about dCache itself, visit: [dCache.org](https://www.dcache.org).
+For more information about dCache, visit: [dCache.org](https://www.dcache.org).
