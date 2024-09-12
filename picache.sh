@@ -289,11 +289,6 @@ xrootd.security.tls.mode=OFF
 xrootd.authz.anonymous-operations = FULL
 xrootd.authz.read-paths = /
 xrootd.authz.write-paths = /
-
-[dCacheDomain/pool]
-pool.name=pool1
-pool.path=/opt/dcache/pool-1
-pool.wait-for-files=${pool.path}/data
 EOF
 
 cat <<'EOF' >/etc/dcache/gplazma.conf
