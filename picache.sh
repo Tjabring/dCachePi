@@ -100,10 +100,6 @@ fi
 # fix if rerun 
 apt --fix-broken install
 apt update && apt install -y wget
-# install for testing and xrdcp
-apt install -y ruby-full
-gem install ansi
-apt install -y xrootd-client
 
 # Fetch and store the GPG key if it not exists
 if [ ! -f /usr/share/keyrings/pgdg.gpg ]; then echo "Will get Postgresql ACCC4CF8.asc key"; wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg; fi
@@ -352,7 +348,39 @@ else
 fi
 chimera chown 1000:1000 /home/tester
 
-# Start dCache
+
+
+echo "Compile and install helper programs xrdcp and dccp and test software"
+# install for testing and xrdcp
+apt install -y ruby-full
+gem install ansi
+apt install -y xrootd-client
+
+# dcap dccp
+git clone https://github.com/dCache/dcap
+cd dcap/
+apt-get update
+apt-get install -y gcc make automake autoconf libtool pkg-config libxml2-dev zlib1g-dev openssl libssl-dev rpm
+sh bootstrap.sh
+autoupdate
+if ! grep -q "/usr/local/lib" /etc/ld.so.conf; then
+    echo "/usr/local/lib" >> /etc/ld.so.conf
+fi
+ldconfig
+./configure
+make
+make install
+
+if command -v dccp >/dev/null 2>&1; then
+    echo "Installation dcap and dccp successful!"
+else
+    echo "Installation dcap failed!"
+fi
+
+
+
+
+# Stop and start dCache
 systemctl daemon-reload
 systemctl stop dcache.target
 # start at boot
