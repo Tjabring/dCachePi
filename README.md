@@ -9,6 +9,7 @@ Features:
 - Sets up firewall rules if used.
 - Generates a self-signed certificate.
 - Supports interactive mode for input if parameters aren't provided.
+- Installs test clients like xrdcp and dccp.
 
 Prerequisites:
 - Raspberry Pi with Raspbian or Debian.
