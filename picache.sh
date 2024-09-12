@@ -360,6 +360,8 @@ chimera chown 1000:1000 /home/tester
 # Start dCache
 systemctl daemon-reload
 systemctl stop dcache.target
+# start at boot
+systemctl enable dcache.target
 systemctl start dcache.target
 
 # Move to a new line before checking the service
