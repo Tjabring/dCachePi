@@ -435,6 +435,7 @@ echo " "
 echo "You can also access the admin console with ssh."
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
 
-echo "You can also access the web interface"
-echo "http://${HOSTNAME}.local:2288"
+ETH0_IP=$(ip -4 addr show dev eth0 | grep inet | awk '{print $2}' | cut -d/ -f1)
+echo "You can also access the web interface - dCache service"
+echo "http://${HOSTNAME}.local:2288 or http://${ETH0_IP}:2288"
 
