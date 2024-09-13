@@ -415,7 +415,7 @@ echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/teste
 echo " "
 
 echo "You can check the upload with a curl PROPFIND command."
-echo "curl -s -u tester:$PASSWD -X PROPFIND http://localhost:2880/home/tester/ | xmlstarlet sel -t -m \"//d:response\" -v \"concat(d:href, ' ', d:displayname, ' ', d:getlastmodified)\" -n"
+echo "curl -s -u tester:dcache123 -X PROPFIND http://localhost:2880/home/tester/ | xmlstarlet sel -N d=\"DAV:\" -t -m \"//d:response\" -v \"concat(d:href, ' ', d:propstat/d:prop/d:displayname, ' ', d:propstat/d:prop/d:getlastmodified)\" -n"
 echo " "
 
 echo "You can test xrootd / xrdcp"
