@@ -377,7 +377,10 @@ else
     echo "Installation dcap failed!"
 fi
 
-
+# for hostname.local
+apt install avahi-daemon
+systemctl enable avahi-daemon
+systemctl start avahi-daemon
 
 
 # Stop and start dCache
@@ -423,9 +426,15 @@ echo "xrdcp -f /bin/bash root://localhost:1096/home/tester/testfile # upload"
 echo "xrdcp -f root://localhost:1096/home/tester/testfile /tmp/testfile # download"
 echo " "
 
+testfilestamp=$(date +%s)
+echo "You can test dcap / dccp"
+echo "dccp -A /bin/bash dcap://localhost:22125/home/tester/testfile-$testfilestamp"
+echo "dccp -A dcap://localhost:22125/home/tester/testfile-$testfilestamp /tmp/testfile-$testfilestamp"
+echo " "
+
 echo "You can also access the admin console with ssh."
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
 
 echo "You can also access the web interface"
-echo "http://localhost:2288"
+echo "http://${HOSTNAME}.local:2288"
 
