@@ -432,6 +432,12 @@ echo "dccp -A /bin/bash dcap://localhost:22125/home/tester/testfile-$testfilesta
 echo "dccp -A dcap://localhost:22125/home/tester/testfile-$testfilestamp /tmp/testfile-$testfilestamp"
 echo " "
 
+echo "You can test ftp."
+echo "echo -e \"quote USER admin\\nquote PASS dcache123\\nbinary\\nls\\nbye\" | ftp -n -P 22126 localhost"
+echo "echo -e \"quote USER admin\\nquote PASS dcache123\\nbinary\\nls\\nput README.md ftp-README.md\\nbye\" | ftp -n -P 22126 localhost"
+echo "echo -e \"quote USER admin\\nquote PASS dcache123\\nbinary\\nls\\nget ftp-README.md /tmp/ftp-README.md\\nbye\" | ftp -n -P 22126 localhost"
+echo " "
+
 echo "You can also access the admin console with ssh."
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
 echo " "
