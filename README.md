@@ -20,10 +20,10 @@ Usage:
 To run with parameters:
 
 If no parameters are provided, the script will prompt for them:
-./picache
+./dcachepi.sh
 
 If you want to pass the parameters with the start of the script use it like this:
-./picache --datadir=<directory> --passwd=<password>
+./dcachepi.sh --datadir=<directory> --passwd=<password>
 
 Based on: https://github.com/sara-nl/dcache_aio
 
