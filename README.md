@@ -16,7 +16,7 @@ Prerequisites:
 - Root access.
 - Internet connection.
 
-##How to use?
+## How to use?
 
 If no parameters are provided, the script will prompt for them:
 
