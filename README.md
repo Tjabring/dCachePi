@@ -16,7 +16,7 @@ Prerequisites:
 - Root access.
 - Internet connection.
 
-To run with parameters:
+How to use?
 
 If no parameters are provided, the script will prompt for them:
 
