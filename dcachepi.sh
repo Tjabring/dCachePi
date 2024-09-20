@@ -360,7 +360,7 @@ apt install -y xrootd-client
 git clone https://github.com/dCache/dcap
 cd dcap/
 apt-get update
-apt-get install -y gcc make automake autoconf libtool pkg-config libxml2-dev zlib1g-dev openssl libssl-dev rpm nordugrid-arc-client
+apt-get install -y gcc make automake autoconf libtool pkg-config libxml2-dev zlib1g-dev openssl libssl-dev rpm 
 sh bootstrap.sh
 autoupdate
 if ! grep -q "/usr/local/lib" /etc/ld.so.conf; then
@@ -376,6 +376,28 @@ if command -v dccp >/dev/null 2>&1; then
 else
     echo "Installation dcap failed!"
 fi
+
+
+# Update system and install required packages nordugrid-arc-client
+apt update
+apt-get install -y \
+    globus-gridftp-server-progs \
+    globus-gass-copy-progs \
+    libglobus-gss-assist-dev \
+    libglobus-common-dev \
+    libglobus-gridftp-server-dev \
+    libglobus-gridmap-callout-error-dev \
+    libcurl4-openssl-dev \
+    nordugrid-arc-client \
+    git \
+    g++ \
+    dpkg-dev \
+    cdbs \
+    globus-gsi-cert-utils-progs \
+    globus-proxy-utils \
+    ruby-full \
+    xrootd-client
+
 
 # for hostname.local
 apt install avahi-daemon
