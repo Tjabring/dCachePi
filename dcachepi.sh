@@ -396,7 +396,6 @@ apt-get install -y \
     globus-gsi-cert-utils-progs \
     globus-proxy-utils \
     ruby-full \
-    xrootd-client
 
 
 # for hostname.local
