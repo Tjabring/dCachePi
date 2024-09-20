@@ -360,7 +360,7 @@ apt install -y xrootd-client
 git clone https://github.com/dCache/dcap
 cd dcap/
 apt-get update
-apt-get install -y gcc make automake autoconf libtool pkg-config libxml2-dev zlib1g-dev openssl libssl-dev rpm
+apt-get install -y gcc make automake autoconf libtool pkg-config libxml2-dev zlib1g-dev openssl libssl-dev rpm nordugrid-arc-client
 sh bootstrap.sh
 autoupdate
 if ! grep -q "/usr/local/lib" /etc/ld.so.conf; then
