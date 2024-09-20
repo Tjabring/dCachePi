@@ -201,7 +201,8 @@ else
     echo "Database 'chimera' created successfully."
 fi
 
-
+sudo -u postgres psql -c "CREATE DATABASE srm OWNER dcache;"
+sudo -u postgres psql -c "CREATE DATABASE pinmanager OWNER dcache;"
 
 systemctl restart postgresql@16-main.service
 
