@@ -351,11 +351,11 @@ chimera chown 1000:1000 /home/tester
 
 
 
-echo "Compile and install helper programs xrdcp and dccp and test software"
+echo "Compile and install helper programs xrdcp,ftp and dccp and test software"
 # install for testing and xrdcp
 apt install -y ruby-full
 gem install ansi
-apt install -y xrootd-client
+apt install -y xrootd-client ftp
 
 # dcap dccp
 git clone https://github.com/dCache/dcap
