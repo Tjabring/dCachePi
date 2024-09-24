@@ -100,10 +100,6 @@ fi
 # fix if rerun 
 apt --fix-broken install
 apt update && apt install -y wget
-# install for testing and xrdcp
-apt install -y ruby-full
-gem install ansi
-apt install -y xrootd-client
 
 # Fetch and store the GPG key if it not exists
 if [ ! -f /usr/share/keyrings/pgdg.gpg ]; then echo "Will get Postgresql ACCC4CF8.asc key"; wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg; fi
@@ -138,13 +134,20 @@ source /etc/default/locale
 
 # Check if UFW or firewalld is running and apply rules accordingly
 if systemctl is-active --quiet ufw; then
+    ufw allow 1094/tcp
+    ufw allow 1096/tcp
     ufw allow 2181/tcp
+    ufw allow 2288/tcp
     ufw allow 22224/tcp
     ufw allow 2880/tcp
     ufw allow 20000:25000/tcp
     ufw allow 33115:33145/tcp
     ufw reload
 elif systemctl is-active --quiet firewalld; then
+
+    firewall-cmd --permanent --zone=public --add-port=1094/tcp
+    firewall-cmd --permanent --zone=public --add-port=1096/tcp
+    firewall-cmd --permanent --zone=public --add-port=2288/tcp
     firewall-cmd --permanent --zone=public --add-port=2181/tcp
     firewall-cmd --permanent --zone=public --add-port=22224/tcp
     firewall-cmd --permanent --zone=public --add-port=2880/tcp
@@ -198,7 +201,8 @@ else
     echo "Database 'chimera' created successfully."
 fi
 
-
+sudo -u postgres psql -c "CREATE DATABASE srm OWNER dcache;"
+sudo -u postgres psql -c "CREATE DATABASE pinmanager OWNER dcache;"
 
 systemctl restart postgresql@16-main.service
 
@@ -226,14 +230,54 @@ dcache.enable.space-reservation = false
 [dCacheDomain/pnfsmanager]
  pnfsmanager.default-retention-policy = REPLICA
  pnfsmanager.default-access-latency = ONLINE
+ pnfsmanager.limits.list-chunk-size=5
+ pnfsmanager.enable.acl=true
 
 [dCacheDomain/cleaner-disk]
 [dCacheDomain/poolmanager]
 [dCacheDomain/billing]
+[dCacheDomain/alarms]
 [dCacheDomain/httpd]
 [dCacheDomain/gplazma]
 [dCacheDomain/webdav]
  webdav.authn.basic = true
+
+[dCacheDomain/statistics]
+[dCacheDomain/srmmanager]
+srmmanager.net.host=localhost
+srmmanager.expired-job-period = 30
+srmmanager.expired-job-period.unit = SECONDS
+
+[dCacheDomain/srm]
+srm.loginbroker.address = localhost
+
+[dCacheDomain/pinmanager]
+
+[dCacheDomain/dcap]
+dcap.authn.protocol=plain
+dcap.authz.anonymous-operations = FULL
+
+[dCacheDomain/dcap]
+dcap.authn.protocol=auth
+
+[dCacheDomain/dcap]
+dcap.authn.protocol=gsi
+
+[dCacheDomain/ftp]
+ftp.authn.protocol=plain
+ftp.net.internal=0.0.0.0
+ftp.authz.readonly.plain = true
+ftp.enable.anonymous-ftp = true
+ftp.anonymous-ftp.root = /
+
+[dCacheDomain/ftp]
+ftp.authn.protocol=tls
+ftp.net.internal=0.0.0.0
+ftp.enable.anonymous-ftp = true
+
+[dCacheDomain/ftp]
+ftp.authn.protocol=gsi
+ftp.net.internal=0.0.0.0
 
 [dCacheDomain/xrootd]
 xrootd.cell.name=Xrootd-anonymous-operations-FULL
@@ -288,11 +332,6 @@ dcache pool create ${DATADIR}/pool-1 pool1 dCacheDomain
 # Update dCache databases
 dcache database update
 
-# Create directories
-#chimera mkdir /home
-#chimera mkdir /home/tester
-
-
 # Create /home directory
 if chimera ls /home >/dev/null 2>&1; then
     echo -e "\033[32mDirectory '/home' already exists.\033[0m"
@@ -308,14 +347,69 @@ else
     chimera mkdir /home/tester
     echo "Directory '/home/tester' created."
 fi
-
-
-
 chimera chown 1000:1000 /home/tester
 
-# Start dCache
+
+
+echo "Compile and install helper programs xrdcp,ftp and dccp and test software"
+# install for testing and xrdcp
+apt install -y ruby-full
+gem install ansi
+apt install -y xrootd-client ftp
+
+# dcap dccp
+git clone https://github.com/dCache/dcap
+cd dcap/
+apt-get update
+apt-get install -y gcc make automake autoconf libtool pkg-config libxml2-dev zlib1g-dev openssl libssl-dev rpm 
+sh bootstrap.sh
+autoupdate
+if ! grep -q "/usr/local/lib" /etc/ld.so.conf; then
+    echo "/usr/local/lib" >> /etc/ld.so.conf
+fi
+ldconfig
+./configure
+make
+make install
+
+if command -v dccp >/dev/null 2>&1; then
+    echo "Installation dcap and dccp successful!"
+else
+    echo "Installation dcap failed!"
+fi
+
+
+# Update system and install required packages nordugrid-arc-client
+apt update
+apt-get install -y \
+    globus-gridftp-server-progs \
+    globus-gass-copy-progs \
+    libglobus-gss-assist-dev \
+    libglobus-common-dev \
+    libglobus-gridftp-server-dev \
+    libglobus-gridmap-callout-error-dev \
+    libcurl4-openssl-dev \
+    nordugrid-arc-client \
+    git \
+    g++ \
+    dpkg-dev \
+    cdbs \
+    globus-gsi-cert-utils-progs \
+    globus-proxy-utils \
+    ruby-full \
+
+
+# for hostname.local
+apt install avahi-daemon
+systemctl enable avahi-daemon
+systemctl start avahi-daemon
+
+
+# Stop and start dCache
 systemctl daemon-reload
 systemctl stop dcache.target
+# start at boot
+systemctl enable dcache.target
 systemctl start dcache.target
 
 # Move to a new line before checking the service
@@ -341,22 +435,35 @@ fi
 echo -e '\033[32m      dCache is ready for use!\033[0m'
 echo " "
 
-echo "You can test uploading the README.md file with webdav now. Use localhost, hostname, or IP address"
+echo "You can test uploading the README.md file with webdav now. Use localhost, hostname or IP address."
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
 echo " "
 
 echo "You can check the upload with a curl PROPFIND command."
-echo "curl -s -u tester:$PASSWD -X PROPFIND http://localhost:2880/home/tester/ | xmlstarlet sel -t -m \"//d:response\" -v \"concat(d:href, ' ', d:displayname, ' ', d:getlastmodified)\" -n"
+echo "curl -s -u tester:dcache123 -X PROPFIND http://localhost:2880/home/tester/ | xmlstarlet sel -N d=\"DAV:\" -t -m \"//d:response\" -v \"concat(d:href, ' ', d:propstat/d:prop/d:displayname, ' ', d:propstat/d:prop/d:getlastmodified)\" -n"
 echo " "
 
-echo "You can test xrootd / xrdcp"
+echo "You can test xrootd / xrdcp."
 echo "xrdcp -f /bin/bash root://localhost:1096/home/tester/testfile # upload"
 echo "xrdcp -f root://localhost:1096/home/tester/testfile /tmp/testfile # download"
 echo " "
 
+testfilestamp=$(date +%s)
+echo "You can test dcap / dccp."
+echo "dccp -A /bin/bash dcap://localhost:22125/home/tester/testfile-$testfilestamp"
+echo "dccp -A dcap://localhost:22125/home/tester/testfile-$testfilestamp /tmp/testfile-$testfilestamp"
+echo " "
+
+echo "You can test ftp."
+echo "echo -e \"quote USER admin\\nquote PASS dcache123\\nbinary\\nls\\nbye\" | ftp -n -P 22126 localhost"
+echo "echo -e \"quote USER admin\\nquote PASS dcache123\\nbinary\\nls\\nput README.md ftp-README.md\\nbye\" | ftp -n -P 22126 localhost"
+echo "echo -e \"quote USER admin\\nquote PASS dcache123\\nbinary\\nls\\nget ftp-README.md /tmp/ftp-README.md\\nbye\" | ftp -n -P 22126 localhost"
+echo " "
+
 echo "You can also access the admin console with ssh."
 echo "Admin console: ssh -p 22224 admin@localhost # with your provided password $PASSWD"
+echo " "
 
-echo "You can also access the web interface"
-echo "http://localhost:2288"
-
+ETH0_IP=$(ip -4 addr show dev eth0 | grep inet | awk '{print $2}' | cut -d/ -f1)
+echo "You can also access the web interface - dCache service."
+echo "http://${HOSTNAME}.local:2288 or http://${ETH0_IP}:2288"
