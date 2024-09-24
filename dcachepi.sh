@@ -397,6 +397,10 @@ apt-get install -y \
     globus-gsi-cert-utils-progs \
     globus-proxy-utils \
     ruby-full \
+    python3-pip \
+
+# install dcache-admin
+pip install dcacheclient --break-system-packages
 
 
 # for hostname.local
