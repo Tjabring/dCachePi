@@ -440,6 +440,8 @@ echo -e '\033[32m      dCache is ready for use!\033[0m'
 echo " "
 
 echo "You can test uploading the README.md file with webdav now. Use localhost, hostname or IP address."
+echo "curl -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
+echo "Or more verbose."
 echo "curl -v -u tester:$PASSWD -L -T README.md http://localhost:2880/home/tester/README.md"
 echo " "
 
