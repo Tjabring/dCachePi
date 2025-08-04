@@ -43,4 +43,4 @@ This script is provided as-is, without warranty.
 Use at your own risk. It is a wrapper around a dCache install and not provided by dCache itself.
 
 For more information about dCache, visit: [dCache.org](https://www.dcache.org).
-DEV branch dCachePi
+MAIN branch dCachePi
