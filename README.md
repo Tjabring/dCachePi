@@ -34,4 +34,6 @@ Use at your own risk. It is a wrapper around a dCache install and not provided b
 
 For more information about dCache, visit: [dCache.org](https://www.dcache.org).a
 
+Check if the download location is still valid.
+
 STABLE branch
