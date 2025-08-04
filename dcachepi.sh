@@ -154,7 +154,7 @@ elif systemctl is-active --quiet firewalld; then
 fi
 
 # Fetch dCache download page and extract information
-URL="https://www.dcache.org/old/downloads/1.9/index.shtml"
+URL="https://www.dcache.org/downloads/release-10-2/"
 page_content=$(lynx -dump $URL)
 
 # Extract the latest package link based on distribution
