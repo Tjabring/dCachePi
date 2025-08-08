@@ -43,3 +43,6 @@ Use at your own risk. It is a wrapper around a dCache install and not provided b
 
 For more information about dCache, visit: [dCache.org](https://www.dcache.org).
 DEV branch dCachePi
+
+Version 1.0 august 2024
+Version 1.1 august 2025

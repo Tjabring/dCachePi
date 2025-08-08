@@ -242,6 +242,41 @@ dcache.enable.space-reservation = false
 [dCacheDomain/webdav]
  webdav.authn.basic = true
 
+[dCacheDomain/webdav]
+webdav.cell.name=WebDAV-S-${host.name}
+webdav.net.port=2881
+webdav.authz.anonymous-operations=READONLY
+webdav.authn.protocol=https
+webdav.redirect.on-read=false
+webdav.redirect.on-write=false
+
+[dCacheDomain/webdav]
+webdav.cell.name=WebDAV-NA-${host.name}
+webdav.net.port=2882
+webdav.authn.basic=true
+webdav.authn.protocol=http
+webdav.loginbroker.tags=${dcache.loginbroker.tags}
+
+[dCacheDomain/webdav]
+webdav.cell.name=WebDAV-DR-${host.name}
+webdav.net.port=2883
+webdav.authz.anonymous-operations=READONLY
+webdav.authn.protocol=https
+webdav.redirect.on-read=false
+webdav.redirect.on-write=false
+webdav.root = /door-root
+webdav.loginbroker.tags=${dcache.loginbroker.tags}
+
+[dCacheDomain/webdav]
+webdav.cell.name=WebDAV-UR-DR-${host.name}
+webdav.net.port=2884
+webdav.authz.anonymous-operations=READONLY
+webdav.authn.protocol=https
+webdav.redirect.on-read=false
+webdav.redirect.on-write=false
+webdav.root = /users-root/door-root
+webdav.loginbroker.tags=${dcache.loginbroker.tags}
+
 [dCacheDomain/statistics]
 [dCacheDomain/srmmanager]
 srmmanager.net.host=localhost
@@ -397,6 +432,7 @@ apt-get install -y \
     globus-gsi-cert-utils-progs \
     globus-proxy-utils \
     ruby-full \
+    sslpass \
 
 
 # for hostname.local
